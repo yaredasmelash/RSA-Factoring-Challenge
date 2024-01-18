@@ -1,0 +1,66 @@
+import random
+
+def power_mod(x, y, z):
+    """
+    Calculates x^y % z
+    """
+    if y == 0:
+        return 1
+    elif y % 2 == 0:
+        temp = power_mod(x, y // 2, z)
+        return (temp * temp) % z
+    else:
+        return (x * power_mod(x, y - 1, z)) % z
+
+def witness(a, n):
+    """
+    Returns True if a is a witness for the compositeness of n
+    """
+    if power_mod(a, n - 1, n) != 1:
+        return True
+    else:
+        return False
+
+def is_prime(n, k=5):
+    """
+    Returns True if n is a prime number
+    """
+    if n == 2 or n == 3:
+        return True
+    elif n % 2 == 0:
+        return False
+
+    r, s = 0, n - 1
+    while s % 2 == 0:
+        r += 1
+        s //= 2
+
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        if witness(a, n):
+            return False
+
+    return True
+
+def factorize(n):
+    """
+    Factorizes n into its prime factors
+    """
+    if is_prime(n):
+        return [n]
+
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            p = i
+            q = n // i
+            return [p] + factorize(q)
+
+    return [n]
+
+n = 2497885147362973
+factors = factorize(n)
+
+if len(factors) == 1:
+    print(f"{n} is a prime number")
+else:
+    print(f"{n} can be factored as {factors[0]} * {factors[1]}")
